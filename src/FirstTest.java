@@ -58,6 +58,59 @@ public class FirstTest {
         );
 
     }
+
+    @Test
+    public void testSearchResulsDisabled()
+    {
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+
+        waitForElementPresent(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Не найдена строка поиска в Вики",
+                15
+        );
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Ford",
+                "Не найдена строка поиска в Вики",
+                5
+        );
+        waitForElementPresent(
+                By.xpath("//*[@class='android.widget.LinearLayout']//*[@text='Car model']"),
+                "Не найдена третья строка в результатах поиска в Вики",
+                20
+
+        );
+
+        waitForElementPresent(
+                By.xpath("//*[@class='android.widget.LinearLayout']//*[@text='Automotive brand manufacturer']"),
+                "Не найдена первая строка в результатах поиска в Вики",
+                15
+
+        );
+
+        waitForElementAndClear(
+                By.id("org.wikipedia:id/search_close_btn"),
+                "Отсутствует кнопка очистки поиска",
+                5
+        );
+
+        waitForElementPresent(
+                By.xpath("//*[@text='Search and read the free encyclopedia in your language']"),
+                "Присутствуют результаты поиска в Вики",
+                15
+        );
+
+
+    }
+
+
+
+
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds)
     {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
@@ -66,6 +119,7 @@ public class FirstTest {
                 ExpectedConditions.presenceOfElementLocated(by)
         );
     }
+
     private WebElement waitForElementAndClick(By by, String error_message, long timeoutInSeconds)
     {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
@@ -73,5 +127,17 @@ public class FirstTest {
         return element;
     }
 
+    private WebElement waitForElementAndClear(By by, String error_message, long timeoutInSeconds)
+    {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
+        element.clear();
+        return element;
+    }
+    private WebElement waitForElementAndSendKeys(By by, String value, String error_message, long timeoutInSeconds)
+    {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
+        element.sendKeys(value);
+        return element;
+    }
 
 }
