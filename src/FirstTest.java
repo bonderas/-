@@ -60,8 +60,7 @@ public class FirstTest {
     }
 
     @Test
-    public void testSearchResulsDisabled()
-    {
+    public void testSearchResulsDisabled() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text,'Search Wikipedia')]"),
                 "Cannot find 'Search Wikipedia' input",
@@ -104,9 +103,39 @@ public class FirstTest {
                 "Присутствуют результаты поиска в Вики",
                 15
         );
-
-
     }
+
+    @Test
+    public void testExistWordInEveryTitle() {
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+
+        waitForElementPresent(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Не найдена строка поиска в Вики",
+                15
+        );
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Ford",
+                "Не найдена строка поиска в Вики",
+                15
+        );
+
+        java.util.List<WebElement> textboxes = driver.findElements(By.id("org.wikipedia:id/page_list_item_title"));
+        for (int i = 0; i<textboxes.size(); i++)
+            {
+
+                String text_textbox = textboxes.get(i).getAttribute("text");
+                Assert.assertTrue("Не все результаты поиска содержат Ford",text_textbox.contains("Ford"));
+            }
+    }
+
+
+
 
 
 
