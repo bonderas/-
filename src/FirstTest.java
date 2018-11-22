@@ -8,10 +8,12 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.server.handler.WebElementHandler;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
 
@@ -266,7 +268,7 @@ public class FirstTest {
         waitForElementAndClick(
                 By.xpath("//*[@text='"+title_article_2+"']"),
                 "Не нашел вторую сохраненную статью в папке",
-                5
+                10
         );
         WebElement  Articlebox_2 = waitForElementPresent (
                 By.id("org.wikipedia:id/view_page_title_text"),
@@ -277,7 +279,42 @@ public class FirstTest {
         Assert.assertTrue("Заголовок статьи номер 2 не совпадает с изначальным", title_articlebox_2.contains(title_article_2));
     }
 
+    @Test
+    public void testSearchTitleInArticle() {
 
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Ford",
+                "Не найдена строка поиска в Вики",
+                15
+        );
+        waitForElementPresent(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Не найдена строка поиска в Вики",
+                15
+        );
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/page_list_item_container"),
+                "Не нашел статью в поиске ",
+                5
+        );
+
+//        waitForElementPresent(
+//                By.id("org.wikipedia:id/view_page_title_text"),
+//                "Проверка работы метода assertElementPresent",
+//                15
+//        );
+
+        assertElementPresent(
+                By.id("org.wikipedia:id/view_page_title_text")
+        );
+    }
 
 
 
@@ -331,6 +368,13 @@ public class FirstTest {
                 .moveTo(left_x, middle_y)
                 .release()
                 .perform();
+    }
+
+    private void assertElementPresent(By by) {
+        List exist_title =  driver.findElements(by);
+        int exist_element = exist_title.size();
+        Assert.assertTrue("Не найден разыскиваемый элемент на странице",exist_element > 0 );
+
     }
 
 }
