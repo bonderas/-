@@ -1,4 +1,5 @@
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
 import org.junit.Assert;
@@ -134,6 +135,147 @@ public class FirstTest {
             }
     }
 
+    @Test
+    public void testSaveTwoArticlesToMyList() {
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Ford",
+                "Не найдена строка поиска в Вики",
+                15
+        );
+        waitForElementPresent(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Не найдена строка поиска в Вики",
+                15
+        );
+        WebElement Article_1 = waitForElementPresent(
+                By.xpath("//*[@class='android.widget.LinearLayout']//*[@text='Ford Motor Company']"),
+                "Не найдена статья 1 в поиске в Вики",
+                15
+        );
+        String title_article_1 =  Article_1.getAttribute("text");
+
+        WebElement Article_2 = waitForElementPresent(
+                By.xpath("//*[@class='android.widget.LinearLayout']//*[@text='Ford F-Series']"),
+                "Не найдена статья 1 в поиске в Вики",
+                15
+        );
+        String title_article_2 =  Article_2.getAttribute("text");
+
+        waitForElementAndClick(
+                By.xpath("//*[@text='"+title_article_1+"']"),
+                "Не нашел статью 'Ford Motor Company' в поиске ",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='Add this article to a reading list']"),
+                "Не нашел кнопку добавления статьи в Избранное ",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@text='Got it']"),
+                "Не нашел кнопку 'Got It' ",
+                5
+        );
+        waitForElementAndClear(
+                By.id("org.wikipedia:id/text_input"),
+                "не нашел строку для заголовка",
+                5
+        );
+        waitForElementAndSendKeys(
+                By.id("org.wikipedia:id/text_input"),
+                "Bla-Bla",
+                "Не найдена строка поиска в Вики",
+                15
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@text='OK']"),
+                "Не нашел кнопку 'OK' ",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='Navigate up']"),
+                "Не нашел Крестик закрытия статьи ",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@text='Ford']"),
+                "Не нашел историю поиска в Вики",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@text='"+title_article_2+"']"),
+                "Не нашел вторую статью в поиске в Вики",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='Add this article to a reading list']"),
+                "Не нашел кнопку добавления статьи в Избраное ",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@text='Bla-Bla']"),
+                "Не нашел папку состатьями",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='Navigate up']"),
+                "Не нашел Крестик закрытия статьи ",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='My lists']"),
+                "Не нашел кнопку Избраное",
+                5
+        );
+        waitForElementAndClick(
+                By.xpath("//*[@text='Bla-Bla']"),
+                "Не нашел папку состатьями",
+                5
+        );
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/item_container"),
+                "Не нашел добавленные статейки в пакете",
+                5
+        );
+        swipeElementToLeft(
+                By.xpath("//*[@text='"+title_article_1+"']"),
+                "Не найдена статья с первым заголовком"
+        );
+        WebElement  Articlebox = waitForElementPresent (
+                    By.id("org.wikipedia:id/page_list_item_title"),
+                    "Не найдена оставшаяся статья",
+                10
+        );
+
+        String title_articlebox = Articlebox.getAttribute("text");
+        Assert.assertFalse("Статья номер 1 не уделилась", title_articlebox.contains(title_article_1));
+        Assert.assertTrue("Отсуствует статья номер 2", title_articlebox.contains(title_article_2));
+
+        waitForElementAndClick(
+                By.xpath("//*[@text='"+title_article_2+"']"),
+                "Не нашел вторую сохраненную статью в папке",
+                5
+        );
+        WebElement  Articlebox_2 = waitForElementPresent (
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "Не найдена оставшаяся статья",
+                10
+        );
+        String title_articlebox_2 = Articlebox_2.getAttribute("text");
+        Assert.assertTrue("Заголовок статьи номер 2 не совпадает с изначальным", title_articlebox_2.contains(title_article_2));
+    }
 
 
 
@@ -167,6 +309,28 @@ public class FirstTest {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.sendKeys(value);
         return element;
+    }
+
+    protected void swipeElementToLeft(By by, String error_message) {
+
+        WebElement element = waitForElementPresent(
+                by,
+                error_message,
+                20);
+
+        int left_x = element.getLocation().getX();
+        int right_x = left_x + element.getSize().getWidth();
+        int upper_y = element.getLocation().getY();
+        int lower_y = upper_y + element.getSize().getHeight();
+        int middle_y = (upper_y + lower_y)/2;
+
+        TouchAction action = new TouchAction(driver);
+        action
+                .press(right_x, middle_y)
+                .waitAction(600)
+                .moveTo(left_x, middle_y)
+                .release()
+                .perform();
     }
 
 }
