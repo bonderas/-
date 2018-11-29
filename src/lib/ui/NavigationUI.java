@@ -7,7 +7,7 @@ public class NavigationUI extends MainPageObject{
 
     public static final String
 
-        MY_LISTS_BUTTON = "//*[@content-desc='My lists']";
+        MY_LISTS_BUTTON = "xpath://*[@content-desc='My lists']";
 
     public NavigationUI(AppiumDriver driver)
     {
@@ -17,7 +17,7 @@ public class NavigationUI extends MainPageObject{
     public void clickButtonMyLists()
     {
         this.waitForElementAndClick(
-                By.xpath(MY_LISTS_BUTTON),
+                MY_LISTS_BUTTON,
                 "Не нашел кнопку Избраное на главной странице Вики",
                 5
         );
