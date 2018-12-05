@@ -1,13 +1,12 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
-import org.openqa.selenium.By;
+import lib.Platform;
+abstract public class MyListsPageObjects extends MainPageObject {
 
-public class MyListsPageObjects extends MainPageObject {
-
-    public static final String
-            FOLDER_BY_NAME_TPL = "//*[@text='{FOLDER_NAME}']",
-            ARTICLE_BY_TITLE_TPL = "//*[@text='{TITLE}']";
+    protected static String
+            FOLDER_BY_NAME_TPL,
+            ARTICLE_BY_TITLE_TPL;
 
 
     public static String getFolderXpathByName(String name_of_folder)
@@ -33,7 +32,7 @@ public class MyListsPageObjects extends MainPageObject {
     {
         String folder_name_xpath = getFolderXpathByName(name_of_folder);
         this.waitForElementAndClick(
-                By.xpath(folder_name_xpath),
+                folder_name_xpath,
             "Не нашел папку состатьями"+ name_of_folder,
             5
         );
@@ -42,13 +41,13 @@ public class MyListsPageObjects extends MainPageObject {
     public void waitForArticleToAppearByTitle(String article_title)
     {
         String article_xpath = getSaveXpathArticleByTitle(article_title);
-        this.waitForElementPresent(By.xpath(article_xpath), "Не найдена сохраненная статья"+ article_title,15);
+        this.waitForElementPresent(article_xpath, "Не найдена сохраненная статья"+ article_title,15);
 
     }
     public void waitForArticleToDisappearByTitle(String article_title)
     {
         String article_xpath = getSaveXpathArticleByTitle(article_title);
-        this.waitForElementNotPresent(By.xpath(article_xpath), "Не удалилась статья"+ article_title,15);
+        this.waitForElementNotPresent(article_xpath, "Не удалилась статья"+ article_title,15);
 
     }
 
@@ -58,9 +57,14 @@ public class MyListsPageObjects extends MainPageObject {
         this.waitForArticleToAppearByTitle(article_title);
         String article_xpath = getSaveXpathArticleByTitle(article_title);
         this.swipeElementToLeft(
-                By.xpath(article_xpath),
+                article_xpath,
                 "Не найдена статья с первым заголовком"
         );
+
+        if(Platform.getInstance().isIOS()){
+           this.clickElementToTheRightUpperConner(article_xpath, "Не смог найти сохраненную статью");
+
+        }
         this.waitForArticleToDisappearByTitle(article_title);
     }
 

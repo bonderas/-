@@ -3,17 +3,22 @@ package lib.ui;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import lib.Platform;
 
-public class ArticlePageObject extends MainPageObject {
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
-    private static final String
-        TITLE = "org.wikipedia:id/view_page_title_text",
-        OPTIONS_BUTTON = "//*[@content-desc='Add this article to a reading list']",
-        OPTIONS_ADD_TO_MY_LIST_BUTTON = "//*[@text='Got it']",
-        ADD_TO_MY_LIST_OVERLAY = "org.wikipedia:id/text_input",
-        MY_LIST_NAME_INPUT = "org.wikipedia:id/text_input",
-        MY_LIST_OK_BUTTON = "//*[@text='OK']",
-        CLOSE_ARTICLE_BUTTON = "//*[@content-desc='Navigate up']";
+abstract public class ArticlePageObject extends MainPageObject {
+
+    protected static String
+        TITLE,
+        OPTIONS_BUTTON,
+        OPTIONS_ADD_TO_MY_LIST_BUTTON,
+        ADD_TO_MY_LIST_OVERLAY,
+        MY_LIST_NAME_INPUT,
+        MY_LIST_OK_BUTTON,
+        PLACE_AUTH_CLOSE,
+        CLOSE_ARTICLE_BUTTON;
 
 
 
@@ -23,41 +28,66 @@ public class ArticlePageObject extends MainPageObject {
         super(driver);
     }
 
+    /* TEMPLATES METODS */
+
+    /* TEMPLATES METODS */
+
+
     public WebElement waitForTitleElement()
     {
-        return this.waitForElementPresent(By.id(TITLE),"Отсуствует заголовок", 5);
+        return this.waitForElementPresent(TITLE,"Отсуствует заголовок", 5);
     }
+
+
+
+    public void existingArticleByLabel(String article_title)
+    {
+        java.util.List<WebElement> textboxes = driver.findElements(By.xpath("//XCUIElementTypeLink"));
+        for (int i = 0; i<textboxes.size(); i++)
+        {
+            String text_textbox = textboxes.get(i).getAttribute("label");
+            assertTrue("В списке статей не найдена статья"+ article_title ,text_textbox.contains(article_title));
+        }
+    }
+
+
+
     public String getArticleTitle()
     {
         WebElement title_element = waitForTitleElement();
-        return title_element.getAttribute("text");
+        if(Platform.getInstance().isAndroid()){
+            return title_element.getAttribute("text");
+        } else {
+            return title_element.getAttribute("name");
+        }
+
     }
 
     public void addArticleInMyList(String name_of_folder)
     {
         this.waitForElementAndClick(
-                By.xpath(OPTIONS_BUTTON),
+                OPTIONS_BUTTON,
                 "Не нашел кнопку добавления статьи в Избранное ",
                 5
         );
         this.waitForElementAndClick(
-                By.xpath(OPTIONS_ADD_TO_MY_LIST_BUTTON),
+                OPTIONS_ADD_TO_MY_LIST_BUTTON,
                 "Не нашел кнопку 'Got It' ",
                 5
         );
         this.waitForElementAndClear(
-                By.id(ADD_TO_MY_LIST_OVERLAY),
+                ADD_TO_MY_LIST_OVERLAY,
                 "не нашел строку для заголовка",
                 5
         );
         this.waitForElementAndSendKeys(
-                By.id(MY_LIST_NAME_INPUT),
+                MY_LIST_NAME_INPUT,
                 name_of_folder,
                 "Не найдена строка заголовка для ввода заголовка папки",
                 15
         );
         this.waitForElementAndClick(
-                By.xpath(MY_LIST_OK_BUTTON),
+                MY_LIST_OK_BUTTON,
                 "Не нашел кнопку 'OK' ",
                 5
         );
@@ -66,7 +96,7 @@ public class ArticlePageObject extends MainPageObject {
     public void clickButtonAddArticleInMyList()
     {
         this.waitForElementAndClick(
-                By.xpath(OPTIONS_BUTTON),
+                OPTIONS_BUTTON,
                 "Не нашел кнопку добавления статьи в Избранное ",
                 5
         );
@@ -76,20 +106,35 @@ public class ArticlePageObject extends MainPageObject {
     public void closeArticle()
     {
         this.waitForElementAndClick(
-                By.xpath(CLOSE_ARTICLE_BUTTON),
+                CLOSE_ARTICLE_BUTTON,
                 "Не нашел Крестик закрытия статьи ",
                 5
         );
     }
 
-    public void existTitleInArticle()
+    public void closePlacesAuthClose()
     {
-        this.assertElementPresent(
-                By.id(TITLE)
+        this.waitForElementAndClick(
+                PLACE_AUTH_CLOSE,
+                "Не нашел Крестик закрытия окна авторизации ",
+                5
         );
     }
 
 
 
+
+    public void existTitleInArticle()
+    {
+        this.assertElementPresent(
+                TITLE
+        );
+    }
+
+
+    public void addArticleInMyiOSList()
+    {
+        this.waitForElementAndClick(OPTIONS_ADD_TO_MY_LIST_BUTTON, "Не нашел кнопку добавления статьи в избранное на iOS", 5);
+    }
 
 }
